@@ -119,8 +119,18 @@ openFile:
     mov rsi, 2               # Flags (O_RDWR)
     mov rdx, 0               # Mode (not used)
     syscall
+
+    test rax, rax
+    js error_opening         # if rax < 0, jump
+    
     pop rbp
     ret
+
+error_opening:
+    lea rdi, [fileError]
+    call printf
+
+    call endOfProgram
 
 readChunk:
     # rdi contains file descriptor (from openFile)
@@ -381,6 +391,7 @@ memAllErr:   .asciz "Error allocating memory\n"
 readError:  .asciz "Error reading file\n"
 filePrompt: .asciz "Enter file name:\n"
 patternPrompt:  .asciz "Enter pattern:\n"
+fileError:  .asciz "Error opening file\n"
 
 .section .bss
 
